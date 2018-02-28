@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>物流查询</title>
+    <style>
+        #container{
+            width: 1000px;
+            margin:0 auto;
+            /*border: 1px solid black;*/
+        }
+        #wrap{text-align: center}
+        ul{
+            list-style: none;
+        }
+        ul li{
+            border:1px solid black;
+            margin-top:6px;
+        }
+        #result{
+            height: 380px;
+            overflow: auto;
+        }
+    </style>
+    <script src="node_modules/jquery/dist/jquery.min.js"></script>
+</head>
+<body>
+    <div id="container">
+        <div id="wrap">
+            <h2>物流查询工具</h2>
+            <select name="" id="selectName">
+                <option value="shentong">申通</option>
+                <option value="ems">EMS</option>
+                <option value="shunfeng">顺风</option>
+                <option value="yuantong">圆通</option>
+                <option value="zhongtong">中通</option>
+                <option value="yunda">韵达</option>
+                <option value="tiantian">天天</option>
+            </select>
+            <input type="text" id="appId">
+            <button id="search">查询</button>
+        </div>
+        <div id="result">
+            <span>查询结果</span>
+            <span>暂无</span>
+            <ul>
+            </ul>
+        </div>
+    </div>
+    <script>
+        $("#search").on('click',function () {
+            $('ul').find('*').remove()
+            let selectName = $("#selectName").val();
+            let appId = $("#appId").val();
+            let url = "http://localhost:8000/query";
+            let data = { "selectName": selectName, "appId": appId };
+            $.ajax({
+                url: url,
+                type: "get",
+                data: data,
+                dataType: 'json',
+                success: function (data) {
+                    if( data.message !== 'ok') {
+                        alert('无物流消息')
+                    } else {
+                        for( let i = 0 ;i < data.data.length; i++) {
+                            $("#result ul").append(
+                            `
+                                <li>
+                                    <p>${data.data[i].time}</p>
+                                    <p>${data.data[i].context}</p>
+                                </li>
+                            `
+                            )
+                        }
+                    }
+                }
+            })
+        })
+    </script>
+</body>
+</html>
+<!--http://www.kuaidi100.com/query?type=yuantong&postid=111111-->
